@@ -3,6 +3,7 @@ export const SplitFundContext = React.createContext(null);
 const initialState = {
   registeredUsers: [],
   loginUser: {},
+  plans: []
 };
 export function Context(props) {
   const [state, setState] = useState(initialState);

@@ -7,6 +7,7 @@ import {
   Image,
   FlatList,
 } from 'react-native';
+import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
 import {Icon} from 'native-base';
 import {SplitFundContext} from '../context/context';
 const {height, width} = Dimensions.get('window');
@@ -34,8 +35,60 @@ export default function Profile(props) {
       headerStyle: {
         backgroundColor: '#888',
       },
+      headerRight: () => {
+        return (
+          <View
+            style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+            <Menu
+              ref={menu}
+              button={
+                <Icon
+                  name="more-vertical"
+                  style={{color: '#fff'}}
+                  type="Feather"
+                  onPress={() => showMenu()}
+                />
+              }>
+              <MenuItem
+                onPress={() => {
+                  props.navigation.navigate('profile');
+                }}>
+                Profile
+              </MenuItem>
+              <MenuItem
+                onPress={() => {
+                  props.navigation.navigate('CreatePlan');
+                  hideMenu();
+                }}>
+                Create Plan
+              </MenuItem>
+              <MenuDivider />
+              <MenuItem onPress={() => {
+                hideMenu();
+                setState({
+                  ...state, loginUser: {}
+                })
+                props.navigation.navigate('Login')
+              }}>Logout</MenuItem>
+            </Menu>
+          </View>
+        );
+        // return <Icon name="more-vertical" type="Feather" onPress={() => showMenu()} />
+      },
     });
   }, [props.navigation]);
+  const menu = React.useRef();
+
+  const hideMenu = () => menu.current.hide();
+
+  const showMenu = () => menu.current.show();
+
+  const getProfileInfo = () => {
+    console.log(state.registeredUsers.filter((e) => e.emailId === state.loginUser.emailId))
+  }
+  useEffect(() => {
+    getProfileInfo()   
+  }, [])
   return (
     <ImageBackground
       blurRadius={1}
@@ -44,7 +97,7 @@ export default function Profile(props) {
       <View
         style={{
           height: height * 0.2,
-          alignItems:'center',
+          alignItems: 'center',
           width: width,
           backgroundColor: 'rgba(233,233,233,0.5)',
           justifyContent: 'center',
@@ -63,7 +116,11 @@ export default function Profile(props) {
           {state.loginUser.image ? (
             <Image
               source={{uri: state.loginUser.image}}
-              style={{height: height * 0.135, width: height * 0.135}}
+              style={{
+                height: height * 0.135,
+                width: height * 0.135,
+                borderRadius: height * 0.07,
+              }}
             />
           ) : (
             <Icon name="user" type="FontAwesome" />
@@ -71,9 +128,9 @@ export default function Profile(props) {
         </View>
         <View style={{height: height * 0.15, justifyContent: 'center'}}>
           <Text style={{fontWeight: 'bold', fontSize: height * 0.03}}>
-            Alexa abc
+            {state.loginUser.name}
           </Text>
-          <Text>alexaabc@gmail.com</Text>
+          <Text>{state.loginUser.emailId}</Text>
         </View>
       </View>
       <View style={{height: height * 0.8, backgroundColor: 'rgba(0,0,0,0.5)'}}>
@@ -96,7 +153,7 @@ export default function Profile(props) {
           style={{
             padding: height * 0.01,
             color: '#198',
-            backgroundColor:'#ff7',
+            backgroundColor: '#ff7',
             borderRadius: height * 0.02,
             marginBottom: 3,
             width: width * 0.2,
@@ -125,13 +182,17 @@ export default function Profile(props) {
                     height: height * 0.08,
                     width: height * 0.08,
                     borderRadius: height * 0.04,
-                    alignItems:'center',
-                    justifyContent:'center'
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}>
                   {/* <Text>{item}</Text> */}
                   <Image
                     source={require('../assets/bg1.jpg')}
-                    style={{width: height * 0.075, height: height * 0.075, borderRadius: height * 0.04}}
+                    style={{
+                      width: height * 0.075,
+                      height: height * 0.075,
+                      borderRadius: height * 0.04,
+                    }}
                   />
                 </View>
               );
@@ -149,7 +210,7 @@ export default function Profile(props) {
             Transaction History
           </Text>
           <FlatList
-            data={[1, 2, 4, 4,5,6,7,8,5, 6, 7]}
+            data={[1, 2, 4, 4, 5, 6, 7, 8, 5, 6, 7]}
             style={{marginBottom: 55}}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item, index}) => {
@@ -163,12 +224,17 @@ export default function Profile(props) {
                     borderBottomRightRadius: 100,
                   }}>
                   <View>
-                    <Text style={{fontSize: height * 0.023}}>
-                      {item}sdklsjfljk
-                    </Text>
+                    <Text style={{fontSize: height * 0.023}}>{item}</Text>
                   </View>
                   <View>
-                    <Text style={{color:'green', fontWeight:'bold', fontSize: height * 0.023}}>6565</Text>
+                    <Text
+                      style={{
+                        color: 'green',
+                        fontWeight: 'bold',
+                        fontSize: height * 0.023,
+                      }}>
+                      6565
+                    </Text>
                     {/* <Icon name="user" type="AntDesign" /> */}
                   </View>
                 </View>

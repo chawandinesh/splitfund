@@ -10,38 +10,45 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import {Button, Icon,Textarea, Thumbnail} from 'native-base';
+import moment from 'moment';
+import {Button, Icon, Textarea, Thumbnail} from 'native-base';
+import {SplitFundContext} from '../context/context';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 const {height, width} = Dimensions.get('window');
 export default function CreatePlan(props) {
+  const {state, setState} = React.useContext(SplitFundContext);
+  console.log(state, 'state');
+  const indexOfUser = state.registeredUsers.findIndex((e) => e.emailId === state.loginUser.emailId)
+  console.log(indexOfUser)
   const [groupState, setGroupState] = useState({
     selected: [],
     image: '',
     groupTitle: '',
+    notes: '',
+    date: moment(new Date()).format('DD-MM-YYYY'),
   });
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerTitleAlign: 'center',
-      headerLeft: null
-      
+      // headerLeft: null,
     });
   }, [props.navigation]);
-  console.log(groupState);
+  // console.log(groupState);
 
   const renderItem = ({item, index}) => {
-    console.log(index === groupState.selected, 'item...');
+    // console.log(item.emailId)
     return (
       <TouchableOpacity
         onPress={() => {
-          if (groupState.selected.includes(index)) {
+          if (groupState.selected.includes(item.emailId)) {
             setGroupState({
               ...groupState,
-              selected: groupState.selected.filter(e => e !== index),
+              selected: groupState.selected.filter(e => e !== item.emailId),
             });
           } else {
             setGroupState({
               ...groupState,
-              selected: [...groupState.selected, index],
+              selected: [...groupState.selected, item.emailId],
             });
           }
         }}
@@ -53,17 +60,21 @@ export default function CreatePlan(props) {
           justifyContent: 'center',
           marginRight: 10,
           borderWidth: 3,
-          backgroundColor: groupState.selected.includes(index)
+          backgroundColor: groupState.selected.includes(item.emailId)
             ? '#fff'
             : '#aaa',
         }}>
-        <View
-          style={{
-            height: height * 0.03,
-            width: height * 0.03,
-            borderRadius: height * 0.02,
-            backgroundColor: '#766',
-          }}></View>
+        {item.image ? (
+          <Image source={{uri: item.image}} />
+        ) : (
+          <View
+            style={{
+              height: height * 0.03,
+              width: height * 0.03,
+              borderRadius: height * 0.02,
+              backgroundColor: '#766',
+            }}></View>
+        )}
         <Text style={{fontWeight: 'bold', fontSize: height * 0.02}}>
           {item.name}
         </Text>
@@ -72,38 +83,15 @@ export default function CreatePlan(props) {
     );
   };
 
-  const userData = [
-    {
-      image: require('../assets/bg1.jpg'),
-      name: 'rozi',
-      emailId: 'rozi@gmail.com',
-    },
-    {
-      image: require('../assets/bg2.jpeg'),
-      name: 'siamk',
-      emailId: 'siamk@gmail.com',
-    },
-    {
-      image: require('../assets/bg3.jpeg'),
-      name: 'johny',
-      emailId: 'johny@gmail.com',
-    },
-    {
-      image: require('../assets/bg4.jpg'),
-      name: 'alexa',
-      emailId: 'alexa@gmail.com',
-    },
-    {
-      image: require('../assets/bg4.jpg'),
-      name: 'alexa',
-      emailId: 'alexa@gmail.com',
-    },
-    {
-      image: require('../assets/bg4.jpg'),
-      name: 'alexa',
-      emailId: 'alexa@gmail.com',
-    },
-  ];
+  const handleSubmit = () => {
+    setState({
+      ...state,
+      plans: [...state.plans, {...groupState, user: state.loginUser}],
+    });
+    // props.navigation.goBack()
+    // console.log(groupState,'groupstate')
+  };
+
   const pickImage = () => {
     ImagePicker.openPicker({
       width: 300,
@@ -159,12 +147,15 @@ export default function CreatePlan(props) {
                   }}
                 />
               ) : (
-                <View style={{alignItems:'center', justifyContent:'center'}}>
+                <View style={{alignItems: 'center', justifyContent: 'center'}}>
                   <Icon type="FontAwesome" name="file-picture-o" />
                   <Text>select image</Text>
                 </View>
               )}
             </TouchableOpacity>
+          </View>
+          <View style={{width: width, alignItems:'center', justifyContent:'center'}}>
+            <Text style={{fontSize: height * 0.04, color:'#fa0'}}>{state.registeredUsers[indexOfUser].wallet} USD</Text>
           </View>
           <View style={{height: height * 0.08, alignSelf: 'center'}}>
             <View
@@ -173,7 +164,12 @@ export default function CreatePlan(props) {
                 backgroundColor: '#fff',
                 borderRadius: height * 0.02,
               }}>
-              <TextInput placeholder="Title" />
+              <TextInput
+                placeholder="Title"
+                onChangeText={text =>
+                  setGroupState({...groupState, groupTitle: text})
+                }
+              />
             </View>
           </View>
           <View
@@ -201,28 +197,26 @@ export default function CreatePlan(props) {
                 justifyContent: 'center',
               }}
               showsHorizontalScrollIndicator={false}
-              data={userData}
+              data={state.registeredUsers.filter((e) => e.emailId !== state.loginUser.emailId)}
               renderItem={renderItem}
               keyExtractor={(item, index) => index.toString()}
             />
           </View>
           <View>
-          <Textarea rowSpan={5}  bordered placeholder="notes" style={{width: width * 0.9, alignSelf:'center', backgroundColor:'#fff', borderRadius: height * 0.05}} />
+            <Textarea
+              rowSpan={5}
+              value={groupState.notes}
+              onChangeText={text => setGroupState({...groupState, notes: text})}
+              bordered
+              placeholder="notes"
+              style={{
+                width: width * 0.9,
+                alignSelf: 'center',
+                backgroundColor: '#fff',
+                borderRadius: height * 0.05,
+              }}
+            />
           </View>
-          {/* <View
-            style={{
-              height: height * 0.1,
-              backgroundColor: '#fff',
-              borderRadius: height * 0.01,
-              width: width * 0.9,
-              alignSelf: 'center',
-              marginTop: height * 0.02,
-            }}>
-            <View style={{width: width * 0.9, height: height * 0.05, backgroundColor:'#000'}}>
-              <Text>Notes</Text>
-            </View>
-            <TextInput numberOfLines={4} multiline />
-          </View> */}
           <View
             style={{
               height: height * 0.1,
@@ -230,6 +224,7 @@ export default function CreatePlan(props) {
               justifyContent: 'center',
             }}>
             <TouchableOpacity
+              onPress={() => handleSubmit()}
               style={{
                 height: height * 0.05,
                 alignItems: 'center',

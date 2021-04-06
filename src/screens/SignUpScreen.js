@@ -94,6 +94,7 @@ export default function LoginScreen(props) {
             ...signInState,
             id: Date.now(),
             createdAt: moment(new Date()).format('DD-MM-YYYY HH:mm:ss'),
+            wallet: Math.floor(Math.random() * 999),
           },
         ],
         loginUser: {
@@ -102,6 +103,7 @@ export default function LoginScreen(props) {
           image: signInState.image,
         },
       });
+      props.navigation.navigate('profile');
       Toast.show({
         text: 'Successfully Registered',
         buttonText: 'Okay',
@@ -111,8 +113,8 @@ export default function LoginScreen(props) {
     }
   };
   return (
-    <Root>
-      <KeyboardAwareScrollView>
+    <KeyboardAwareScrollView>
+      <Root>
         <ImageBackground
           source={require('../assets/bg1.jpg')}
           style={{width: width, height: height * 0.9}}>
@@ -266,7 +268,6 @@ export default function LoginScreen(props) {
               }}>
               <TouchableOpacity
                 onPress={() => {
-                  // props.navigation.navigate('MainRoutes')
                   handleSubmit();
                 }}
                 style={{
@@ -308,7 +309,7 @@ export default function LoginScreen(props) {
             </View>
           </View>
         </ImageBackground>
-      </KeyboardAwareScrollView>
-    </Root>
+      </Root>
+    </KeyboardAwareScrollView>
   );
 }

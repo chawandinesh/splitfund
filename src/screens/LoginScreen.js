@@ -43,7 +43,7 @@ export default function LoginScreen(props) {
           type: 'success',
         });
 
-        props.navigation.navigate('MainRoutes');
+        props.navigation.navigate('profile');
       } else {
         console.log('not matched');
         Toast.show({

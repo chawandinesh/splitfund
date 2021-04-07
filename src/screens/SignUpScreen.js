@@ -95,6 +95,8 @@ export default function LoginScreen(props) {
             id: Date.now(),
             createdAt: moment(new Date()).format('DD-MM-YYYY HH:mm:ss'),
             wallet: Math.floor(Math.random() * 999),
+            transactions: [],
+            plans:[]
           },
         ],
         loginUser: {

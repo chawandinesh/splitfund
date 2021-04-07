@@ -25,6 +25,13 @@ export default function LoginScreen(props) {
     });
   }, [props.navigation]);
 
+  const getIndex = () => {
+    return state.registeredUsers.findIndex(
+      e => e.emailId === signInState.emailId,
+    );
+  };
+  console.log(state)
+
   const handleLogin = () => {
     // console.log(signInState, 'signin state');
     if (state.registeredUsers.find(e => e.emailId === signInState.emailId)) {
@@ -41,6 +48,10 @@ export default function LoginScreen(props) {
           buttonText: 'Okay',
           position: 'bottom',
           type: 'success',
+        });
+        setState({
+          ...state,
+          loginUser: state.registeredUsers[getIndex()],
         });
 
         props.navigation.navigate('profile');

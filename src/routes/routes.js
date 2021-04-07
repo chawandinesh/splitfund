@@ -5,20 +5,22 @@ import {createStackNavigator} from '@react-navigation/stack';
 import LoginScreen from '../screens/LoginScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import CreatePlan from '../screens/CreatePlan';
-import Profile from '../screens/Profile'
+import Profile from '../screens/Profile';
 import MainRoutes from './MainRoutes';
-import Dashboard from '../screens/Dashboard'
+import Dashboard from '../screens/Dashboard';
+import Plan from '../screens/Plan';
 const Stack = createStackNavigator();
 export default function Routes() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login" >
+      <Stack.Navigator initialRouteName="Login">
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Signup" component={SignUpScreen} />
-         <Stack.Screen name="CreatePlan" component={CreatePlan} />
+        <Stack.Screen name="CreatePlan" component={CreatePlan} />
         {/* <Stack.Screen name="MainRoutes" component={MainRoutes} options={{headerShown:false}}/> */}
         <Stack.Screen name="profile" component={Profile} />
-        <Stack.Screen name="Dashboard" component={Dashboard}/>
+        <Stack.Screen name="plan" component={Plan}/>
+        <Stack.Screen name="Dashboard" component={Dashboard} />
       </Stack.Navigator>
     </NavigationContainer>
   );

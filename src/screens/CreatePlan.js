@@ -18,14 +18,18 @@ const {height, width} = Dimensions.get('window');
 export default function CreatePlan(props) {
   const {state, setState} = React.useContext(SplitFundContext);
   console.log(state, 'state');
-  const indexOfUser = state.registeredUsers.findIndex((e) => e.emailId === state.loginUser.emailId)
-  console.log(indexOfUser)
+  const indexOfUser = state.registeredUsers.findIndex(
+    e => e.emailId === state.loginUser.emailId,
+  );
+  console.log(indexOfUser);
   const [groupState, setGroupState] = useState({
-    selected: [],
+    selected: [state.loginUser.emailId],
     image: '',
     groupTitle: '',
     notes: '',
+    fund:0,
     date: moment(new Date()).format('DD-MM-YYYY'),
+    id: Date.now()
   });
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -83,13 +87,14 @@ export default function CreatePlan(props) {
     );
   };
 
+  const getIndex = () => {
+    return state.registeredUsers.findIndex(
+      e => e.emailId === state.loginUser.emailId,
+    );
+  };
   const handleSubmit = () => {
-    setState({
-      ...state,
-      plans: [...state.plans, {...groupState, user: state.loginUser}],
-    });
-    // props.navigation.goBack()
-    // console.log(groupState,'groupstate')
+    state.registeredUsers[getIndex()].plans.push(groupState);
+    props.navigation.goBack()
   };
 
   const pickImage = () => {
@@ -154,8 +159,15 @@ export default function CreatePlan(props) {
               )}
             </TouchableOpacity>
           </View>
-          <View style={{width: width, alignItems:'center', justifyContent:'center'}}>
-            <Text style={{fontSize: height * 0.04, color:'#fa0'}}>{state.registeredUsers[indexOfUser].wallet} USD</Text>
+          <View
+            style={{
+              width: width,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+            <Text style={{fontSize: height * 0.04, color: '#fa0'}}>
+              {state.registeredUsers[indexOfUser].wallet} USD
+            </Text>
           </View>
           <View style={{height: height * 0.08, alignSelf: 'center'}}>
             <View
@@ -197,10 +209,28 @@ export default function CreatePlan(props) {
                 justifyContent: 'center',
               }}
               showsHorizontalScrollIndicator={false}
-              data={state.registeredUsers.filter((e) => e.emailId !== state.loginUser.emailId)}
+              data={state.registeredUsers.filter(
+                e => e.emailId !== state.loginUser.emailId,
+              )}
               renderItem={renderItem}
               keyExtractor={(item, index) => index.toString()}
             />
+          </View>
+          <View style={{height: height * 0.08, alignSelf: 'center'}}>
+            <View
+              style={{
+                width: width * 0.9,
+                backgroundColor: '#fff',
+                borderRadius: height * 0.02,
+              }}>
+              <TextInput
+                placeholder="Expected Fund"
+                keyboardType="numeric"
+                onChangeText={text =>
+                  setGroupState({...groupState, fund: parseInt(text)})
+                }
+              />
+            </View>
           </View>
           <View>
             <Textarea

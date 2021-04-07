@@ -5,29 +5,42 @@ import {
   ImageBackground,
   Dimensions,
   Image,
+  TouchableOpacity,
+  Pressable,
   FlatList,
+  StyleSheet,
+  Modal,
+  TextInput,
 } from 'react-native';
 import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
+import {useIsFocused} from '@react-navigation/native';
+
 import {Icon} from 'native-base';
 import {SplitFundContext} from '../context/context';
+import moment from 'moment';
 const {height, width} = Dimensions.get('window');
 export default function Profile(props) {
+  const isFocused = useIsFocused();
   const {state, setState} = useContext(SplitFundContext);
-  const renderItem = ({item, index}) => {
-    // <View
-    //   style={{
-    //     backgroundColor: '#fff',
-    //     height: height * 0.1,
-    //     width: height * 0.1,
-    //     borderRadius: 1,
-    //     borderWidth: 2,
-    //   }}>
-    // <Text style={{backgroundColor:'#fff', padding: 12}}>{item}</Text>
-    // <View style={{padding: 10, backgroundColor: '#fff', marginRight: 5}}>
-    //   <Text>{item}</Text>
-    // </View>
-    // </View>;
-  };
+  const [walletText, setWalletText] = useState(0);
+  const [modalVisible, setModalVisible] = useState(false);
+  const getInitialData = async () => {};
+
+  const filterAllPlans = () => {
+    const allPlans = []
+    state.registeredUsers.map((e) => {
+      allPlans.push(e.plans)
+      console.log(e.plans)
+    })
+    return allPlans
+  }
+  // console.log(filterAllPlans().flat().filter((e) => e.selected.includes(state.loginUser.emailId)), "allPlans")
+
+  React.useEffect(() => {
+    getInitialData();
+  }, [props.navigation, isFocused]);
+
+
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerTitleAlign: 'center',
@@ -63,13 +76,18 @@ export default function Profile(props) {
                 Create Plan
               </MenuItem>
               <MenuDivider />
-              <MenuItem onPress={() => {
-                hideMenu();
-                setState({
-                  ...state, loginUser: {}
-                })
-                props.navigation.navigate('Login')
-              }}>Logout</MenuItem>
+              <MenuItem
+                onPress={() => {
+                  hideMenu();
+                  setState({
+                    ...state,
+                    plans: state.plans,
+                    loginUser: {},
+                  });
+                  props.navigation.navigate('Login');
+                }}>
+                Logout
+              </MenuItem>
             </Menu>
           </View>
         );
@@ -84,11 +102,20 @@ export default function Profile(props) {
   const showMenu = () => menu.current.show();
 
   const getProfileInfo = () => {
-    console.log(state.registeredUsers.filter((e) => e.emailId === state.loginUser.emailId))
-  }
+    return state.registeredUsers.filter(
+      e => e.emailId === state.loginUser.emailId,
+    );
+  };
+  const getIndex = () => {
+    return state.registeredUsers.findIndex(
+      e => e.emailId === state.loginUser.emailId,
+    );
+  };
+
   useEffect(() => {
-    getProfileInfo()   
-  }, [])
+    console.log(getProfileInfo(), getIndex());
+    filterAllPlans()
+  }, []);
   return (
     <ImageBackground
       blurRadius={1}
@@ -138,16 +165,28 @@ export default function Profile(props) {
           style={{
             height: height * 0.1,
             alignItems: 'center',
-            justifyContent: 'center',
+            justifyContent: 'space-around',
+            flexDirection: 'row',
           }}>
-          <Text
-            style={{
-              fontSize: height * 0.03,
-              fontWeight: 'bold',
-              color: '#ffa',
-            }}>
-            Wallet : $548 USD
-          </Text>
+          <View></View>
+          <View>
+            <Text
+              style={{
+                fontSize: height * 0.03,
+                fontWeight: 'bold',
+                color: '#ffa',
+              }}>
+              Wallet : ${state.loginUser.emailId && getProfileInfo()[0].wallet} USD
+            </Text>
+          </View>
+          <View>
+            <Icon
+              name="plus"
+              type="Entypo"
+              style={{color: '#fff'}}
+              onPress={() => setModalVisible(true)}
+            />
+          </View>
         </View>
         <Text
           style={{
@@ -162,19 +201,16 @@ export default function Profile(props) {
           }}>
           Plans :
         </Text>
-        {/* <View style={{flexDirection:'row', overflow: 'scroll', width: width}}>
-          {[1,2,4,6,3,3,6,2,6,1,6,0,5].map((e,idx) => <View key={idx} style={{padding: 10, backgroundColor:'#fff', marginRight: 5}}><Text>{e}</Text></View> )}
-        </View> */}
         <View style={{height: height * 0.1}}>
           <FlatList
-            data={[1, 2, 3, 4, 5, 6, 7, 0, 12, 45, 345, 8, 34, 54]}
-            // style={{backgroundColor:'#d67'}}
+            data={filterAllPlans().flat().filter((e) => e.selected.includes(state.loginUser.emailId))}
             horizontal
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item, index}) => {
               return (
-                <View
+                <TouchableOpacity
+                  // onPress={() => props.navigation.navigate("plan", {data:item})}
                   style={{
                     // padding: 10,
                     backgroundColor: '#fff',
@@ -185,16 +221,15 @@ export default function Profile(props) {
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}>
-                  {/* <Text>{item}</Text> */}
                   <Image
-                    source={require('../assets/bg1.jpg')}
+                    source={{uri: item.image}}
                     style={{
                       width: height * 0.075,
                       height: height * 0.075,
                       borderRadius: height * 0.04,
                     }}
                   />
-                </View>
+                </TouchableOpacity>
               );
             }}
           />
@@ -209,8 +244,36 @@ export default function Profile(props) {
             }}>
             Transaction History
           </Text>
+          <View
+            style={{
+              height: height * 0.05,
+              backgroundColor: '#888',
+              alignItems: 'center',
+              borderBottomWidth: 2,
+              justifyContent: 'space-around',
+              flexDirection: 'row',
+              // borderBottomRightRadius: 100,
+            }}>
+            <View>
+              <Text style={{fontSize: height * 0.023}}>Date</Text>
+            </View>
+            <View>
+              <Text style={{fontSize: height * 0.023}}>type</Text>
+            </View>
+            <View>
+              <Text
+                style={{
+                  color: '#000',
+                  fontWeight: 'bold',
+                  fontSize: height * 0.023,
+                }}>
+                wallet
+              </Text>
+              {/* <Icon name="user" type="AntDesign" /> */}
+            </View>
+          </View>
           <FlatList
-            data={[1, 2, 4, 4, 5, 6, 7, 8, 5, 6, 7]}
+            data={state.loginUser.emailId && state.registeredUsers[getIndex()].transactions}
             style={{marginBottom: 55}}
             keyExtractor={(item, index) => index.toString()}
             renderItem={({item, index}) => {
@@ -224,16 +287,19 @@ export default function Profile(props) {
                     borderBottomRightRadius: 100,
                   }}>
                   <View>
-                    <Text style={{fontSize: height * 0.023}}>{item}</Text>
+                    <Text style={{fontSize: height * 0.02}}>{item.date}</Text>
+                  </View>
+                  <View>
+                    <Text style={{fontSize: height * 0.02}}>{item.type}</Text>
                   </View>
                   <View>
                     <Text
                       style={{
                         color: 'green',
                         fontWeight: 'bold',
-                        fontSize: height * 0.023,
+                        fontSize: height * 0.02,
                       }}>
-                      6565
+                      {item.text}
                     </Text>
                     {/* <Icon name="user" type="AntDesign" /> */}
                   </View>
@@ -243,6 +309,103 @@ export default function Profile(props) {
           />
         </View>
       </View>
+
+      <View style={styles.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Add wallet!</Text>
+              <View stylw={{width: width * 0.5}}>
+                <TextInput
+                  style={{borderBottomWidth: 1}}
+                  keyboardType="numeric"
+                  onChangeText={e => setWalletText(e)}
+                />
+              </View>
+              <Pressable
+                style={[
+                  {...styles.button, ...styles.buttonClose, marginTop: 10},
+                ]}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  state.registeredUsers[getIndex()].wallet += parseInt(
+                    walletText,
+                  );
+                  state.registeredUsers[getIndex()].transactions.push({
+                    type: 'added to wallet',
+                    date: moment(new Date()).format('DD-MM-YYYY'),
+                    text: parseInt(walletText),
+                  });
+                  setState(state);
+                }}>
+                <Text style={styles.textStyle}>Submit</Text>
+              </Pressable>
+              <Pressable
+                style={[
+                  {...styles.button, ...styles.buttonClose, marginTop: 10},
+                ]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>Hide Modal</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+        <Pressable
+          style={[styles.button, styles.buttonOpen]}
+          onPress={() => setModalVisible(true)}>
+          <Text style={styles.textStyle}>Show Modal</Text>
+        </Pressable>
+      </View>
     </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: '#F194FF',
+  },
+  buttonClose: {
+    backgroundColor: '#2196F3',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+});

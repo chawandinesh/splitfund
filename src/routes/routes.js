@@ -13,7 +13,7 @@ const Stack = createStackNavigator();
 export default function Routes() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="profile">
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Signup" component={SignUpScreen} />
         <Stack.Screen name="CreatePlan" component={CreatePlan} />

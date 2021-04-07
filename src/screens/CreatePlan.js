@@ -27,9 +27,9 @@ export default function CreatePlan(props) {
     image: '',
     groupTitle: '',
     notes: '',
-    fund:0,
+    fund: 0,
     date: moment(new Date()).format('DD-MM-YYYY'),
-    id: Date.now()
+    id: Date.now(),
   });
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -69,7 +69,7 @@ export default function CreatePlan(props) {
             : '#aaa',
         }}>
         {item.image ? (
-          <Image source={{uri: item.image}} />
+          <Image source={item.image ? {uri: item.image} : null} />
         ) : (
           <View
             style={{
@@ -94,7 +94,7 @@ export default function CreatePlan(props) {
   };
   const handleSubmit = () => {
     state.registeredUsers[getIndex()].plans.push(groupState);
-    props.navigation.goBack()
+    props.navigation.goBack();
   };
 
   const pickImage = () => {
@@ -183,38 +183,6 @@ export default function CreatePlan(props) {
                 }
               />
             </View>
-          </View>
-          <View
-            style={{
-              width: width,
-              alignSelf: 'center',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <Text style={{fontSize: height * 0.03, color: '#fff'}}>
-              Select Persons {groupState.selected.length}
-            </Text>
-          </View>
-          <View
-            style={{
-              height: height * 0.1,
-              width: width * 0.9,
-              alignSelf: 'center',
-              backgroundColor: 'rgba(0,0,0,0.4)',
-            }}>
-            <FlatList
-              horizontal
-              contentContainerStyle={{
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-              showsHorizontalScrollIndicator={false}
-              data={state.registeredUsers.filter(
-                e => e.emailId !== state.loginUser.emailId,
-              )}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
-            />
           </View>
           <View style={{height: height * 0.08, alignSelf: 'center'}}>
             <View

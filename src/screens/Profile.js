@@ -62,12 +62,12 @@ export default function Profile(props) {
                   onPress={() => showMenu()}
                 />
               }>
-              <MenuItem
+              {/* <MenuItem
                 onPress={() => {
                   props.navigation.navigate('profile');
                 }}>
                 Profile
-              </MenuItem>
+              </MenuItem> */}
               <MenuItem
                 onPress={() => {
                   props.navigation.navigate('CreatePlan');
@@ -76,7 +76,7 @@ export default function Profile(props) {
                 Create Plan
               </MenuItem>
               <MenuDivider />
-              <MenuItem
+              {/* <MenuItem
                 onPress={() => {
                   hideMenu();
                   setState({
@@ -87,7 +87,7 @@ export default function Profile(props) {
                   props.navigation.navigate('Login');
                 }}>
                 Logout
-              </MenuItem>
+              </MenuItem> */}
             </Menu>
           </View>
         );
@@ -153,12 +153,12 @@ export default function Profile(props) {
             <Icon name="user" type="FontAwesome" />
           )}
         </View>
-        <View style={{height: height * 0.15, justifyContent: 'center'}}>
+        {/* <View style={{height: height * 0.15, justifyContent: 'center'}}>
           <Text style={{fontWeight: 'bold', fontSize: height * 0.03}}>
             {state.loginUser.name}
           </Text>
           <Text>{state.loginUser.emailId}</Text>
-        </View>
+        </View> */}
       </View>
       <View style={{height: height * 0.8, backgroundColor: 'rgba(0,0,0,0.5)'}}>
         <View
@@ -210,7 +210,7 @@ export default function Profile(props) {
             renderItem={({item, index}) => {
               return (
                 <TouchableOpacity
-                  // onPress={() => props.navigation.navigate("plan", {data:item})}
+                  onPress={() => props.navigation.navigate("plan", {data:item})}
                   style={{
                     // padding: 10,
                     backgroundColor: '#fff',
@@ -222,7 +222,7 @@ export default function Profile(props) {
                     justifyContent: 'center',
                   }}>
                   <Image
-                    source={{uri: item.image}}
+                    source={ item.image ? {uri: item.image} : null}
                     style={{
                       width: height * 0.075,
                       height: height * 0.075,
